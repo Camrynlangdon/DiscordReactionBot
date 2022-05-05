@@ -6,9 +6,6 @@ Basic Commands:
 
 
 
-
-
-
 To start the bot: 
 
 1. Navigate to the correct file
@@ -35,7 +32,7 @@ To start the bot:
     
     How to get TOKEN:  The token is both the user and password of your bot.  With this token, your code knows where to login and to which account.
     Visit: https://discord.com/developers/applications To make your bot and get a token
-    Youtube follow along: 
+    Youtube follow along: https://youtu.be/j_sD9udZnCk?t=528
 
 
 
