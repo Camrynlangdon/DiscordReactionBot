@@ -54,16 +54,9 @@ client.on('messageReactionAdd', async (reaction: any, user: any) => {
 	}
 
     console.log('--------------------------------------------');
-    //console.log("TEST", reaction.message.reactions.cache);
-
-
-
 	console.log(`Post made by: ${reaction.message.author.username} #${reaction.message.author.discriminator}`);
     console.log(`Post reads: ${reaction.message.content}`);
-    const reactions = reaction.message.reactions.cache.map((messageReaction: any) => 
-    messageReaction._emoji);
-    //messageReaction._emoji.id || messageReaction._emoji.name);
-    console.log("reactions on this post ", reactions.name);
+    const reactions = reaction.message.reactions.cache.map((messageReaction: any) => messageReaction._emoji);
 
 
     const userToSendInfoTo = client?.users?.cache?.get(adminID);
@@ -72,8 +65,21 @@ client.on('messageReactionAdd', async (reaction: any, user: any) => {
     await userToSendInfoTo?.send(`Post made by: ${reaction.message.author.username} #${reaction.message.author.discriminator}`);
     
     for(let i = 0; i < reactions.length; i++){
-        const messageReaction = reaction.message?.reactions.cache.get(!undefined ? reactions[i].name : reactions[i].id);
 
+
+        let messageReaction = reaction.message?.reactions.cache.get(reactions[i].name);
+        let emojiName = reactions[i].name;
+        if(messageReaction == undefined){
+            messageReaction = reaction.message?.reactions.cache.get(reactions[i].id);
+            emojiName = `<:${reactions[i].name}:${reactions[i].id}>`;
+        }
+        if(emojiName == adminReaction){
+            if(reactions.length <= 1){
+                await userToSendInfoTo?.send(`This post has zero reactions`);
+            }
+            userToSendInfoTo?.send(`End-----------------------------------------`);
+            return;
+        } 
         const users = await messageReaction?.users.fetch();
         if(users == undefined) {
             console.log('--------------------------------------------');
@@ -84,30 +90,28 @@ client.on('messageReactionAdd', async (reaction: any, user: any) => {
         const userMap = users.map(((user: any) => "  " + user.username + " #" + user.discriminator));
 
         console.log("");
-        console.log("emoji: ", !undefined ? reactions[i].name : reactions[i].id);
+        console.log("emoji: ", emojiName);
         console.log("Number of users that reacted: ", userMap.length);
         console.log("Users that reacted");
-
         for (let i = 0; i < userMap.length; i++) {
             console.log(`${userMap[i]}`);
         }
 
-
         //DM admin the results
         try {
-            await userToSendInfoTo?.send(`reading from emoji  ${!undefined ? reactions[i].name : reactions[i].id}`);
+            await userToSendInfoTo?.send("___");
+            await userToSendInfoTo?.send(`reading from emoji  ${emojiName}`);
             await userToSendInfoTo?.send(`Number of users that reacted: ${userMap.length}`);
             await userToSendInfoTo?.send(`Users that reacted: ${userMap}`);
         } catch (error) {
             console.log(`One of the messages was unable to send`, error);
         }
     }
-    userToSendInfoTo?.send(`--------------------------------------------`);
-
+    
+    userToSendInfoTo?.send(`End-----------------------------------------`);
     console.log(`Sent DM to admin's inbox containing the bot's response`);
     console.log('--------------------------------------------');
 });
-
 
 client.login(Token)
 
